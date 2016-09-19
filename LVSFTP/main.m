@@ -45,9 +45,9 @@ int main(int argc, const char * argv[]) {
             
             [session disconnect];
         }
-        NSRunLoop *currLoop = [NSRunLoop currentRunLoop];
-        [currLoop addPort:[NSPort port] forMode:NSDefaultRunLoopMode];
-        [currLoop run];
+//        NSRunLoop *currLoop = [NSRunLoop currentRunLoop];
+//        [currLoop addPort:[NSPort port] forMode:NSDefaultRunLoopMode];
+//        [currLoop run];
     }
     return 0;
 }
