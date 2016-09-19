@@ -11,27 +11,36 @@
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        NSLog(@"Hello, World!");
-
         
+        if (argc - 1 < 4) {
+            printf("参数个数不匹配\n");
+            return 0;
+        }
         
-        NMSSHSession *session = [[NMSSHSession alloc] initWithHost:@"192.168.0.1:22" andUsername:@"admin"];
+        NSString *host = [NSString stringWithFormat:@"%s", argv[1]];
+        NSString *username = [NSString stringWithFormat:@"%s", argv[2]];
+        NSString *password = [NSString stringWithFormat:@"%s", argv[3]];
+        NSString *remoteDirectory = [NSString stringWithFormat:@"%s", argv[4]];
+        
+        NMSSHSession *session = [[NMSSHSession alloc] initWithHost:host andUsername:username];
         [session connect];
         
         if (session.isConnected) {
-            [session authenticateByPassword:@"admin"];
+            [session authenticateByPassword:password];
             
             if (session.isAuthorized) {
                 [session.sftp connect];
                 
-                NSArray *remoteFileList = [session.sftp contentsOfDirectoryAtPath:@"/path/ios/"];
-                for (NMSFTPFile *file in remoteFileList) {
-                    NSLog(@"%@", file.filename);
+                for (int i=5; i<(argc-1); i+=2) {
+                    NSString *localFilePath = [NSString stringWithFormat:@"%s", argv[i]];
+                    NSString *toFilePath = [NSString stringWithFormat:@"%@/%s", remoteDirectory, argv[i+1]];
+                    BOOL writeResult = [session.channel uploadFile:localFilePath to:toFilePath];
+                    assert(writeResult);
                 }
-                NSString *content = [[NSString alloc] initWithData:[session.sftp contentsAtPath:@"/path/ios/js.txt"] encoding:NSUTF8StringEncoding];
-                NSLog(@"%@",content);
-                BOOL writeResult = [session.sftp writeContents:[@"abc11" dataUsingEncoding:NSUTF8StringEncoding] toFileAtPath:@"/path/ios/js.txt"];
-                assert(writeResult);
+            }
+            NSArray *remoteFileList = [session.sftp contentsOfDirectoryAtPath:remoteDirectory];
+            for (NMSFTPFile *file in remoteFileList) {
+                NSLog(@"--------%@--------", file.filename);
             }
             
             [session disconnect];
