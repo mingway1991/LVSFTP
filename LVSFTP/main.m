@@ -14,6 +14,7 @@ int main(int argc, const char * argv[]) {
         
         if (argc - 1 < 4) {
             printf("参数个数不匹配\n");
+            printf("参数格式：host username password remoteDirectory localPath1 remoteFileName1 localPath2 remoteFileName2 localPath3 remoteFileName3 ...\n后面的文件可以只传一个\n");
             return 0;
         }
         
